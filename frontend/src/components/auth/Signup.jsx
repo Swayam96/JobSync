@@ -10,8 +10,7 @@ import { toast } from 'sonner'
 import { useDispatch, useSelector } from 'react-redux'
 import { setLoading } from '@/redux/authSlice'
 import { Loader2 } from 'lucide-react'
-const API_ENDPOINT = import.meta.env.VITE_USER_API_END_POINT;
-const res = await axios.post(`${API_ENDPOINT}/register`, formData, { /*options*/ });
+
 
 
 
