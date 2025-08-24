@@ -14,9 +14,12 @@ export const register = async (req, res) => {
         success: false
       });
     }
-    const file = req.file;
-    const fileUri = getDataUri(file);
-    const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+    
+    let cloudResponse;
+    if (req.file) {
+      const fileUri = getDataUri(req.file);
+      cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+    }
 
     const user = await User.findOne({ email });
     if (user) {
@@ -34,7 +37,7 @@ export const register = async (req, res) => {
       password: hashedPassword,
       role,
       profile: {
-        profilePhoto: cloudResponse.secure_url,
+        profilePhoto: cloudResponse ? cloudResponse.secure_url : null,
       }
     });
 
@@ -50,6 +53,7 @@ export const register = async (req, res) => {
     });
   }
 };
+
 
 export const login = async (req, res) => {
   try {
@@ -100,8 +104,8 @@ export const login = async (req, res) => {
     return res.status(200)
       .cookie("token", token, {
         maxAge: 1 * 24 * 60 * 60 * 1000,
-        httpOnly: true,                       // fixed typo from httpsOnly to httpOnly
-        sameSite: 'lax'                       // changed from 'strict' to 'lax' to allow cross-origin cookies during development
+        httpOnly: true,
+        sameSite: 'lax'
       })
       .json({
         message: `Welcome back ${user.fullname}`,
@@ -116,6 +120,7 @@ export const login = async (req, res) => {
     });
   }
 };
+
 
 export const logout = async (req, res) => {
   try {
@@ -132,13 +137,16 @@ export const logout = async (req, res) => {
   }
 };
 
+
 export const updateProfile = async (req, res) => {
   try {
     const { fullname, email, phoneNumber, bio, skills } = req.body;
 
-    const file = req.file;
-    const fileUri = getDataUri(file);
-    const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+    let cloudResponse;
+    if (req.file) {
+      const fileUri = getDataUri(req.file);
+      cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+    }
 
     let skillsArray;
     if (skills) {
@@ -163,7 +171,7 @@ export const updateProfile = async (req, res) => {
     // save resume url and original name if uploaded
     if (cloudResponse) {
       user.profile.resume = cloudResponse.secure_url;
-      user.profile.resumeOriginalName = file.originalname;
+      user.profile.resumeOriginalName = req.file.originalname;
     }
 
     await user.save();
