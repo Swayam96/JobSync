@@ -29,15 +29,13 @@ const Login = () => {
   const submitHandler = async (e) => {
     e.preventDefault()
     try {
-      dispatch(setLoading(true))
-      const res = await axios.post(
-        ("https://jobsync-z3is.onrender.com"),
-        input,
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        }
-      )
+      dispatch(setLoading(true));
+            const res = await axios.post(`${USER_API_END_POINT}/login`, input, {
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                withCredentials: true,
+            });
       if (res.data.success) {
         dispatch(setUser(res.data.user))
         navigate("/")
