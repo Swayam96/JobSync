@@ -23,7 +23,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(cookieParser());
 const corsOptions = {
-    origin:'http://localhost:5173',
+    origin:['http://localhost:5173','https://jobsync-z3is.onrender.com'],
     credentials:true
 }
 app.options("*", cors(corsOptions));
